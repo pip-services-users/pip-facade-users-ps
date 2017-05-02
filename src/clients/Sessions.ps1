@@ -6,70 +6,6 @@
 ##
 #######################################################
 
-function New-PipAccount
-{
-<#
-.SYNOPSIS
-
-Creates a new user account
-
-.DESCRIPTION
-
-Creates a new user account
-
-.PARAMETER Connection
-
-A connection object
-
-.PARAMETER Name
-
-A name to refer to the client facade
-
-.PARAMETER Account
-
-An account with the following structure
-- email: string
-- name: string
-- login: string
-- password: string
-- about: string (optional)
-- theme: string  (optional)
-- language: string (optional)
-- theme: string (optional)
-
-.EXAMPLE
-
-# Creates a new user account and 
-PS> Write-PipLog -Name "test" -Message @{ correlation_id="123"; level=2; source="Powershell" error=@{ message="Failed" }; message="Just a test" }
-
-#>
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
-        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
-        [Object] $Account
-    )
-    begin {}
-    process 
-    {
-        $route = "/api/1.0/signup"
-
-        $session = Invoke-PipFacade -Connection $Connection -Name $Name -Method "Post" -Route $route -Request $Account
-
-        $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
-        if ($Connection -ne $null) {
-            $Connection.Headers["x-session-id"] = $session.id
-        }
-        
-        Write-Output $session
-    }
-    end {}
-}
-
 
 function Open-PipSession
 {
@@ -188,7 +124,7 @@ Gets sessions by specified criteria
 
 .DESCRIPTION
 
-Gets a oage with sessions that satisfy specified criteria
+Gets a page with sessions that satisfy specified criteria
 
 .PARAMETER Connection
 

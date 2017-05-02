@@ -10,3 +10,5 @@ $path = $PSScriptRoot
 if ($path -eq "") { $path = "." }
 
 . "$($path)/src/clients/Sessions.ps1"
+. "$($path)/src/clients/Accounts.ps1"
+. "$($path)/src/clients/Connections.ps1"
