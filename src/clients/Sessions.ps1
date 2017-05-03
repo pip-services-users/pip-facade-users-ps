@@ -26,6 +26,26 @@ A connection object
 
 A name to refer to the client facade
 
+.PARAMETER Method
+
+An operation method (default: 'Get')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/signin)
+
+.PARAMETER SessionHeader
+
+Header name where session id is placed (default: x-session-id)
+
+.PARAMETER Login
+
+User login
+
+.PARAMETER Password
+
+User password
+
 .EXAMPLE
 
 PS> $test = Open-PipSession -Name "test" -Login "test1@somewhere.com" -Password "mypassword"
@@ -38,6 +58,12 @@ PS> $test = Open-PipSession -Name "test" -Login "test1@somewhere.com" -Password 
         [Hashtable] $Connection,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Get",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/signin",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $SessionHeader = "x-session-id",
         [Parameter(Mandatory=$true, Position = 4, ValueFromPipelineByPropertyName=$true)]
         [string] $Login,
         [Parameter(Mandatory=$true, Position = 5, ValueFromPipelineByPropertyName=$true)]
@@ -46,17 +72,17 @@ PS> $test = Open-PipSession -Name "test" -Login "test1@somewhere.com" -Password 
     begin {}
     process 
     {
-        $route = "/api/1.0/signin"
+        $route = $Uri
         $params = @{
             login = $Login
             password = $Password
         }
 
-        $session = Invoke-PipFacade -Connection $Connection -Method "Get" -Route $route -Params $params
+        $session = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Params $params
 
         $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
         if ($Connection -ne $null) {
-            $Connection.Headers["x-session-id"] = $session.id
+            $Connection.Headers[$SessionHeader] = $session.id
         }
         
         Write-Output $session
@@ -84,6 +110,14 @@ A connection object
 
 A name to refer to the client facade
 
+.PARAMETER Method
+
+An operation method (default: 'Get')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/signout)
+
 .EXAMPLE
 
 PS> Close-PipConnection -Name "test"
@@ -95,18 +129,24 @@ PS> Close-PipConnection -Name "test"
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name
+        [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Get",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/signout",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $SessionHeader = "x-session-id"
     )
     begin {}
     process 
     {
-        $route = "/api/1.0/signout"
+        $route = $Uri
 
-        $session = Invoke-PipFacade -Connection $Connection -Method "Get" -Route $route
+        $session = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route
 
         $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
         if ($Connection -ne $null) {
-            $Connection.Headers["x-session-id"] = $session.id
+            $Connection.Headers[$SessionHeader] = $session.id
         }
         
         Write-Output $session
@@ -134,6 +174,14 @@ A connection object
 
 A name to refer to the client facade
 
+.PARAMETER Method
+
+An operation method (default: 'Get')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/sessions)
+
 .PARAMETER Filter
 
 A filter with search criteria (default: no filter)
@@ -145,6 +193,10 @@ A number of records to skip (default: 0)
 .PARAMETER Take
 
 A number of records to return (default: 100)
+
+.PARAMETER Total
+
+A include total count (default: false)
 
 .EXAMPLE
 
@@ -159,6 +211,10 @@ PS> Get-PipSessions -Name "test" -Take 10
         [Hashtable] $Connection,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Get",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/sessions",
         [Parameter(Mandatory=$false, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Filter = @{},
         [Parameter(Mandatory=$false, Position = 1, ValueFromPipelineByPropertyName=$true)]
@@ -171,7 +227,7 @@ PS> Get-PipSessions -Name "test" -Take 10
     begin {}
     process 
     {
-        $route = "/api/1.0/sessions"
+        $route = $Uri
 
         $params = $Filter +
         @{ 
@@ -180,7 +236,7 @@ PS> Get-PipSessions -Name "test" -Take 10
             total = $Total
         }
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method "Get" -Route $route -Params $params
+        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
 
         Write-Output $result.Data
     }

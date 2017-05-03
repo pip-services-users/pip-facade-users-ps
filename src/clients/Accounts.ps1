@@ -25,6 +25,14 @@ A connection object
 
 A name to refer to the client facade
 
+.PARAMETER Method
+
+An operation method (default: 'Post')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/signup)
+
 .PARAMETER Account
 
 An account with the following structure
@@ -50,15 +58,19 @@ PS> Write-PipLog -Name "test" -Message @{ correlation_id="123"; level=2; source=
         [Hashtable] $Connection,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Post",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/signup",
         [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [Object] $Account
     )
     begin {}
     process 
     {
-        $route = "/api/1.0/signup"
+        $route = $Uri
 
-        $session = Invoke-PipFacade -Connection $Connection -Name $Name -Method "Post" -Route $route -Request $Account
+        $session = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $Account
 
         $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
         if ($Connection -ne $null) {
@@ -90,6 +102,14 @@ A connection object
 
 A name to refer to the client facade
 
+.PARAMETER Method
+
+An operation method (default: 'Get')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/accounts)
+
 .PARAMETER Filter
 
 A filter with search criteria (default: no filter)
@@ -101,6 +121,10 @@ A number of records to skip (default: 0)
 .PARAMETER Take
 
 A number of records to return (default: 100)
+
+.PARAMETER Total
+
+A include total count (default: false)
 
 .EXAMPLE
 
@@ -115,6 +139,10 @@ PS> Get-PipAccounts -Name "test" -Take 10
         [Hashtable] $Connection,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Get",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/accounts",
         [Parameter(Mandatory=$false, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Filter = @{},
         [Parameter(Mandatory=$false, Position = 1, ValueFromPipelineByPropertyName=$true)]
@@ -127,7 +155,7 @@ PS> Get-PipAccounts -Name "test" -Take 10
     begin {}
     process 
     {
-        $route = "/api/1.0/accounts"
+        $route = $Uri
 
         $params = $Filter +
         @{ 
@@ -136,7 +164,7 @@ PS> Get-PipAccounts -Name "test" -Take 10
             total = $Total
         }
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method "Get" -Route $route -Params $params
+        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
 
         Write-Output $result.Data
     }
