@@ -6,83 +6,6 @@
 ##
 #######################################################
 
-function New-PipAccount
-{
-<#
-.SYNOPSIS
-
-Creates a new user account
-
-.DESCRIPTION
-
-Creates a new user account
-
-.PARAMETER Connection
-
-A connection object
-
-.PARAMETER Name
-
-A name to refer to the client facade
-
-.PARAMETER Method
-
-An operation method (default: 'Post')
-
-.PARAMETER Uri
-
-An operation uri (default: /api/1.0/signup)
-
-.PARAMETER Account
-
-An account with the following structure
-- email: string
-- name: string
-- login: string
-- password: string
-- about: string (optional)
-- theme: string  (optional)
-- language: string (optional)
-- theme: string (optional)
-
-.EXAMPLE
-
-# Creates a new user account and 
-PS> Write-PipLog -Name "test" -Message @{ correlation_id="123"; level=2; source="Powershell" error=@{ message="Failed" }; message="Just a test" }
-
-#>
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Method = "Post",
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Uri = "/api/1.0/signup",
-        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
-        [Object] $Account
-    )
-    begin {}
-    process 
-    {
-        $route = $Uri
-
-        $session = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $Account
-
-        $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
-        if ($Connection -ne $null) {
-            $Connection.Headers["x-session-id"] = $session.id
-        }
-        
-        Write-Output $session
-    }
-    end {}
-}
-
-
 function Get-PipAccounts
 {
 <#
@@ -167,6 +90,278 @@ PS> Get-PipAccounts -Name "test" -Take 10
         $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
 
         Write-Output $result.Data
+    }
+    end {}
+}
+
+
+function Get-PipAccount
+{
+<#
+.SYNOPSIS
+
+Gets user account by id
+
+.DESCRIPTION
+
+Gets user account by its unique id
+
+.PARAMETER Connection
+
+A connection object
+
+.PARAMETER Name
+
+A name to refer to the client facade
+
+.PARAMETER Method
+
+An operation method (default: 'Get')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/accounts/{0})
+
+.PARAMETER Id
+
+A user account id
+
+.EXAMPLE
+
+# Gets user account by id 123
+PS> Get-PipAccount -Name "test" -Id 123
+
+#>
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [Hashtable] $Connection,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Get",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/accounts/{0}",
+        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [string] $Id
+    )
+    begin {}
+    process 
+    {
+        $route = $Uri -f $Id
+
+        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route
+        
+        Write-Output $result
+    }
+    end {}
+}
+
+
+function New-PipAccount
+{
+<#
+.SYNOPSIS
+
+Creates a new user account
+
+.DESCRIPTION
+
+Creates a new user account
+
+.PARAMETER Connection
+
+A connection object
+
+.PARAMETER Name
+
+A name to refer to the client facade
+
+.PARAMETER Method
+
+An operation method (default: 'Post')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/signup)
+
+.PARAMETER Account
+
+An account with the following structure
+- email: string
+- name: string
+- login: string
+- password: string
+- about: string (optional)
+- theme: string  (optional)
+- language: string (optional)
+- theme: string (optional)
+
+.EXAMPLE
+
+# Creates a new user account and 
+PS> New-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; email="test@somewhere.com"; password="test123" }
+
+#>
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [Hashtable] $Connection,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Post",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/accounts",
+        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [Object] $Account
+    )
+    begin {}
+    process 
+    {
+        $route = $Uri
+
+        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $Account
+
+        Write-Output $result
+    }
+    end {}
+}
+
+
+function Update-PipAccount
+{
+<#
+.SYNOPSIS
+
+Creates a new user account
+
+.DESCRIPTION
+
+Creates a new user account
+
+.PARAMETER Connection
+
+A connection object
+
+.PARAMETER Name
+
+A name to refer to the client facade
+
+.PARAMETER Method
+
+An operation method (default: 'Put')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/accounts/{0})
+
+.PARAMETER Guide
+
+An account with the following structure
+- email: string
+- name: string
+- login: string
+- password: string
+- about: string (optional)
+- theme: string  (optional)
+- language: string (optional)
+- theme: string (optional)
+
+.EXAMPLE
+
+# Update existing user account
+PS> Update-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; email="test@somewhere.com"; password="test123" }
+
+#>
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [Hashtable] $Connection,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Put",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/accounts/{0}",
+        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [Object] $Account
+    )
+    begin {}
+    process 
+    {
+        $route = $Uri -f $Account.id
+
+        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $Account
+        
+        Write-Output $result
+    }
+    end {}
+}
+
+
+function Remove-PipAccount
+{
+<#
+.SYNOPSIS
+
+Removes user account by id
+
+.DESCRIPTION
+
+Removes user account by its unique id
+
+.PARAMETER Connection
+
+A connection object
+
+.PARAMETER Name
+
+A name to refer to the client facade
+
+.PARAMETER Method
+
+An operation method (default: 'Delete')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/accounts/{0})
+
+.PARAMETER Id
+
+A user account id
+
+.EXAMPLE
+
+# Delete user account with id 123
+PS> Remove-PipAccount -Name "test" -Id 123
+
+#>
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [Hashtable] $Connection,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Delete",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/accounts/{0}",
+        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [string] $Id
+    )
+    begin {}
+    process 
+    {
+        $route = $Uri -f $Id
+
+        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route
+        
+        Write-Output $result
     }
     end {}
 }

@@ -7,6 +7,83 @@
 #######################################################
 
 
+function Register-PipUser
+{
+<#
+.SYNOPSIS
+
+Signs up a new user
+
+.DESCRIPTION
+
+Performs signup and opens a new session
+
+.PARAMETER Connection
+
+A connection object
+
+.PARAMETER Name
+
+A name to refer to the client facade
+
+.PARAMETER Method
+
+An operation method (default: 'Post')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/signup)
+
+.PARAMETER Account
+
+An account with the following structure
+- email: string
+- name: string
+- login: string
+- password: string
+- about: string (optional)
+- theme: string  (optional)
+- language: string (optional)
+- theme: string (optional)
+
+.EXAMPLE
+
+# Creates a new user account and 
+PS> Register-PipUser -Name "test" -User @{ name="Test User"; login="test"; email="test@somewhere.com"; password="test123" }
+
+#>
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [Hashtable] $Connection,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Post",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/signup",
+        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [Object] $User
+    )
+    begin {}
+    process 
+    {
+        $route = $Uri
+
+        $session = Invoke-PipFacade -Connection $Connection -Name $Name -Method "Post" -Route $route -Request $User
+
+        $Connection = if ($Connection -eq $null) { Get-IqtConnection -Name $Name } else { $Connection }
+        if ($Connection -ne $null) {
+            $Connection.Headers["x-session-id"] = $session.id
+        }
+        
+        Write-Output $session
+    }
+    end {}
+}
+
+
 function Open-PipSession
 {
 <#
@@ -243,3 +320,59 @@ PS> Get-PipSessions -Name "test" -Take 10
     end {}
 }
 
+
+function Get-PipCurrentSession
+{
+<#
+.SYNOPSIS
+
+Gets the current session
+
+.DESCRIPTION
+
+Gets the current session
+
+.PARAMETER Connection
+
+A connection object
+
+.PARAMETER Name
+
+A name to refer to the client facade
+
+.PARAMETER Method
+
+An operation method (default: 'Get')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/sessions/current)
+
+.EXAMPLE
+
+PS> Get-PipCurrentSession -Name "test"
+
+#>
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [Hashtable] $Connection,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Get",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/sessions/current"
+    )
+    begin {}
+    process 
+    {
+        $route = $Uri
+
+        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
+
+        Write-Output $result.Data
+    }
+    end {}
+}
