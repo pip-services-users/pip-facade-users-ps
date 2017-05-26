@@ -258,7 +258,7 @@ An operation method (default: 'Put')
 
 An operation uri (default: /api/1.0/accounts/{0})
 
-.PARAMETER Guide
+.PARAMETER Account
 
 An account with the following structure
 - email: string
