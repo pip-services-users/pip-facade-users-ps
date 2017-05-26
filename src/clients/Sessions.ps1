@@ -71,7 +71,7 @@ PS> Register-PipUser -Name "test" -User @{ name="Test User"; login="test"; email
     {
         $route = $Uri
 
-        $session = Invoke-PipFacade -Connection $Connection -Name $Name -Method "Post" -Route $route -Request $User
+        $session = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $User
 
         $Connection = if ($Connection -eq $null) { Get-IqtConnection -Name $Name } else { $Connection }
         if ($Connection -ne $null) {
