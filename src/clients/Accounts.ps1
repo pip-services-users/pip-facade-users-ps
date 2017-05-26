@@ -168,7 +168,8 @@ Creates a new user account
 
 .DESCRIPTION
 
-Creates a new user account
+Creates a new user account, sets email address and temporary password.
+Check the assigned password in the result object.
 
 .PARAMETER Connection
 
@@ -201,7 +202,7 @@ An account with the following structure
 .EXAMPLE
 
 # Creates a new user account and 
-PS> New-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; email="test@somewhere.com"; password="test123" }
+PS> New-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; email="test@somewhere.com" }
 
 #>
     [CmdletBinding()]
@@ -273,7 +274,7 @@ An account with the following structure
 .EXAMPLE
 
 # Update existing user account
-PS> Update-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; email="test@somewhere.com"; password="test123" }
+PS> Update-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; email="test@somewhere.com"; }
 
 #>
     [CmdletBinding()]
