@@ -34,9 +34,9 @@ An operation method (default: 'Post')
 
 An operation uri (default: /api/1.0/signup)
 
-.PARAMETER Account
+.PARAMETER User
 
-An account with the following structure
+An user info with the following structure
 - email: string
 - name: string
 - login: string
@@ -48,7 +48,7 @@ An account with the following structure
 
 .EXAMPLE
 
-# Creates a new user account and 
+# Registers a new user in the system
 PS> Register-PipUser -Name "test" -User @{ name="Test User"; login="test"; email="test@somewhere.com"; password="test123" }
 
 #>
