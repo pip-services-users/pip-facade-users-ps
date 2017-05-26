@@ -236,11 +236,11 @@ function Update-PipAccount
 <#
 .SYNOPSIS
 
-Creates a new user account
+Updates a user account
 
 .DESCRIPTION
 
-Creates a new user account
+Updates a user account
 
 .PARAMETER Connection
 
