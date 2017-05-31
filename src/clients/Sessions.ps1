@@ -76,6 +76,7 @@ PS> Register-PipUser -Name "test" -User @{ name="Test User"; login="test"; email
         $Connection = if ($Connection -eq $null) { Get-IqtConnection -Name $Name } else { $Connection }
         if ($Connection -ne $null) {
             $Connection.Headers["x-session-id"] = $session.id
+            $Connection.Session = $session
         }
         
         Write-Output $session
@@ -160,6 +161,7 @@ PS> $test = Open-PipSession -Name "test" -Login "test1@somewhere.com" -Password 
         $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
         if ($Connection -ne $null) {
             $Connection.Headers[$SessionHeader] = $session.id
+            $Connection.Session = $session
         }
         
         Write-Output $session
@@ -223,7 +225,8 @@ PS> Close-PipConnection -Name "test"
 
         $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
         if ($Connection -ne $null) {
-            $Connection.Headers[$SessionHeader] = $session.id
+            $Connection.Headers[$SessionHeader] = $null
+            $Connection.Session = $null
         }
         
         Write-Output $session
@@ -372,7 +375,7 @@ PS> Get-PipCurrentSession -Name "test"
 
         $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
 
-        Write-Output $result.Data
+        Write-Output $result
     }
     end {}
 }
