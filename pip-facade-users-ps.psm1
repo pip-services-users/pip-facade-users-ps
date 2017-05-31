@@ -14,3 +14,4 @@ if ($path -eq "") { $path = "." }
 . "$($path)/src/clients/Roles.ps1"
 . "$($path)/src/clients/Connections.ps1"
 . "$($path)/src/clients/Passwords.ps1"
+. "$($path)/src/clients/Activities.ps1"
