@@ -66,7 +66,7 @@ PS> $test = Connect-PipFacade -Name "test" -Host "172.16.141.175" -Post 28800 -L
     begin {}
     process 
     {
-        $connection = Open-PipConnection -Name $Name -Protocol $Protocol -Host $Host -Port $Port
+        $connection = Open-PipConnection -Name $Name -Protocol $Protocol -Host $Host -Port $Port -ErrorAction Stop
         $null = Open-PipSession -Connection $connection -Login $Login -Password $Password
         Write-Output $connection
     }
