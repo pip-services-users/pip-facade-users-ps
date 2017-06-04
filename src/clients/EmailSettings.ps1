@@ -1,21 +1,21 @@
 ########################################################
 ##
-## Passwords.ps1
+## EmailSettings.ps1
 ## Client facade to user management Pip.Services
-## Password management commands
+## Email settings commands
 ##
 #######################################################
 
-function Set-PipPassword
+function Get-PipEmailSettings
 {
 <#
 .SYNOPSIS
 
-Get user roles
+Get user email settings
 
 .DESCRIPTION
 
-Gets all assigned roles to a user by its id
+Gets all users email settings by its id
 
 .PARAMETER Connection
 
@@ -25,17 +25,21 @@ A connection object
 
 A name to refer to the client facade
 
-.PARAMETER OldPassword
+.PARAMETER Method
 
-An old password
+An operation method (default: 'Get')
 
-.PARAMETER NewPassword
+.PARAMETER Uri
 
-A new password
+An operation uri (default: /api/1.0/email_settings/{0})
+
+.PARAMETER Id
+
+A unique user id
 
 .EXAMPLE
 
-PS> Set-PipPassword -Name "test" -Id 123
+PS> Get-PipEmailSettings -Name "test" -Id 123
 
 #>
     [CmdletBinding()]
@@ -46,55 +50,105 @@ PS> Set-PipPassword -Name "test" -Id 123
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Method = "Post",
+        [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Uri = "/api/1.0/passwords/{0}/change",
-        [Parameter(Mandatory=$true, Position = 0, ValueFromPipelineByPropertyName=$true)]
-        [string] $OldPassword,
-        [Parameter(Mandatory=$true, Position = 1, ValueFromPipelineByPropertyName=$true)]
-        [string] $NewPassword
+        [string] $Uri = "/api/1.0/email_settings/{0}",
+        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [string] $Id
     )
     begin {}
     process 
     {
-        if ($Connection -eq $null) {
-            $Connection = Get-PipConnection -Name $Name
-        }
-        if ($Connection -eq $null) {
-            throw "Server is not connected"
-        }
+        $route = $Uri -f $Id
 
-        $userId = $null
-        if ($Connection.Session -ne $null) {
-            $userId = $Connection.Session.user_id
-        }
-        if ($userId -eq $null) {
-            throw "Session is not opened"
-        }
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route
 
-        $route = $Uri -f $userId
-
-        $params = @{ 
-            old_password = $OldPassword;
-            new_password = $NewPassword;
-        }
-
-        $null = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
+        Write-Output $result
     }
     end {}
 }
 
 
-function Request-PipPassword
+function Set-PipEmailSettings
 {
 <#
 .SYNOPSIS
 
-Requests password recovery email
+Set user email settings
 
 .DESCRIPTION
 
-Requests a password recovery email. The email is set to the account primary email with reset code
+Sets all users email settings defined by its id
+
+.PARAMETER Connection
+
+A connection object
+
+.PARAMETER Name
+
+A name to refer to the client facade
+
+.PARAMETER Method
+
+An operation method (default: 'Put')
+
+.PARAMETER Uri
+
+An operation uri (default: /api/1.0/email_settings/{0})
+
+.PARAMETER Settings
+
+An user email settings with the following structure
+- id: string
+- name: string
+- email: string
+- language: string
+- subscriptions: any
+- custom_hdr: any
+- custom_dat: any
+
+.EXAMPLE
+
+PS> Set-PipEmailSettings -Name "test" -Settings @{ id="123"; name="Test user"; email="test@somewhere.com"; language="en" }
+
+#>
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [Hashtable] $Connection,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Name,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Method = "Put",
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [string] $Uri = "/api/1.0/email_settings/{0}",
+        [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+        [Object] $Settings
+    )
+    begin {}
+    process 
+    {
+        $route = $Uri -f $Settings.id
+
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $Settings
+
+        Write-Output $result
+    }
+    end {}
+}
+
+
+function Request-PipEmailVerification
+{
+<#
+.SYNOPSIS
+
+Requests email verification message
+
+.DESCRIPTION
+
+Requests a email verification message by user login
 
 .PARAMETER Connection
 
@@ -110,7 +164,7 @@ User login
 
 .EXAMPLE
 
-PS> Request-PipPassword -Name "test" -Login test@somewhere.com
+PS> Request-PipEmailVerification -Name "test" -Login test@somewhere.com
 
 #>
     [CmdletBinding()]
@@ -123,7 +177,7 @@ PS> Request-PipPassword -Name "test" -Login test@somewhere.com
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Uri = "/api/1.0/passwords/recover",
+        [string] $Uri = "/api/1.0/email_settings/resend",
         [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [string] $Login
     )
@@ -142,16 +196,16 @@ PS> Request-PipPassword -Name "test" -Login test@somewhere.com
 }
 
 
-function Reset-PipPassword
+function Submit-PipEmailVerification
 {
 <#
 .SYNOPSIS
 
-Resets user password
+Verifies user email address
 
 .DESCRIPTION
 
-Resets user password using reset code sent by email
+Verifies user email address using reset code sent by email
 
 .PARAMETER Connection
 
@@ -169,13 +223,9 @@ User login
 
 Reset code
 
-.PARAMETER Password
-
-A new password
-
 .EXAMPLE
 
-PS> Reset-PipPassword -Name "test" -Login test@somewhere.com -Code 1245 -Password pass123
+PS> Submit-PipEmailVerification -Name "test" -Login test@somewhere.com -Code 1245
 
 #>
     [CmdletBinding()]
@@ -188,13 +238,11 @@ PS> Reset-PipPassword -Name "test" -Login test@somewhere.com -Code 1245 -Passwor
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Uri = "/api/1.0/passwords/reset",
+        [string] $Uri = "/api/1.0/email_settings/verify",
         [Parameter(Mandatory=$true, Position = 0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
         [string] $Login,
         [Parameter(Mandatory=$true, Position = 1, ValueFromPipelineByPropertyName=$true)]
-        [string] $Code,
-        [Parameter(Mandatory=$true, Position = 2, ValueFromPipelineByPropertyName=$true)]
-        [string] $Password
+        [string] $Code
     )
     begin {}
     process 
@@ -204,7 +252,6 @@ PS> Reset-PipPassword -Name "test" -Login test@somewhere.com -Code 1245 -Passwor
         $request = @{ 
             login = $Login;
             code = $Code;
-            password = $Password;
         }
 
         $null = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $request

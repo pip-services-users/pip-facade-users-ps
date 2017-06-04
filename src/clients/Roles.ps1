@@ -33,6 +33,10 @@ An operation method (default: 'Get')
 
 An operation uri (default: /api/1.0/roles/{0})
 
+.PARAMETER Id
+
+A unique user id
+
 .EXAMPLE
 
 PS> Get-PipRoles -Name "test" -Id 123
@@ -91,6 +95,10 @@ An operation method (default: 'Post')
 .PARAMETER Uri
 
 An operation uri (default: /api/1.0/roles/{0}/grant)
+
+.PARAMETER Id
+
+A unique user id
 
 .EXAMPLE
 
@@ -152,6 +160,10 @@ An operation method (default: 'Post')
 .PARAMETER Uri
 
 An operation uri (default: /api/1.0/roles/{0}/revoke)
+
+.PARAMETER Id
+
+A unique user id
 
 .EXAMPLE
 
