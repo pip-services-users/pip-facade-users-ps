@@ -21,10 +21,6 @@ Requests email message to arbitrary address
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Message
 
 Message object with the following fields:
@@ -41,7 +37,7 @@ Optional recipient identified who is a system user
 
 .EXAMPLE
 
-PS> Send-PipEmail -Name "test" -Message @{ to="somebody@somewhere.com"; subject="Test"; text="This is a test email" }
+Send-PipEmail -Message @{ to="somebody@somewhere.com"; subject="Test"; text="This is a test email" }
 
 #>
     [CmdletBinding()]
@@ -49,8 +45,6 @@ PS> Send-PipEmail -Name "test" -Message @{ to="somebody@somewhere.com"; subject=
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -75,7 +69,7 @@ PS> Send-PipEmail -Name "test" -Message @{ to="somebody@somewhere.com"; subject=
             }
         }
 
-        $null = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params -Request $Message
+        $null = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Params $params -Request $Message
     }
     end {}
 }

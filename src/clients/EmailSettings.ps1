@@ -21,10 +21,6 @@ Gets all users email settings by its id
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Get')
@@ -39,7 +35,7 @@ A unique user id
 
 .EXAMPLE
 
-PS> Get-PipEmailSettings -Name "test" -Id 123
+Get-PipEmailSettings -Id 123
 
 #>
     [CmdletBinding()]
@@ -47,8 +43,6 @@ PS> Get-PipEmailSettings -Name "test" -Id 123
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -84,10 +78,6 @@ Sets all users email settings defined by its id
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Put')
@@ -109,7 +99,7 @@ An user email settings with the following structure
 
 .EXAMPLE
 
-PS> Set-PipEmailSettings -Name "test" -Settings @{ id="123"; name="Test user"; email="test@somewhere.com"; language="en" }
+Set-PipEmailSettings -Settings @{ id="123"; name="Test user"; email="test@somewhere.com"; language="en" }
 
 #>
     [CmdletBinding()]
@@ -117,8 +107,6 @@ PS> Set-PipEmailSettings -Name "test" -Settings @{ id="123"; name="Test user"; e
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Put",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -154,17 +142,13 @@ Requests a email verification message by user login
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Login
 
 User login
 
 .EXAMPLE
 
-PS> Request-PipEmailVerification -Name "test" -Login test@somewhere.com
+Request-PipEmailVerification -Login test@somewhere.com
 
 #>
     [CmdletBinding()]
@@ -172,8 +156,6 @@ PS> Request-PipEmailVerification -Name "test" -Login test@somewhere.com
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -190,7 +172,7 @@ PS> Request-PipEmailVerification -Name "test" -Login test@somewhere.com
             login = $Login;
         }
 
-        $null = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $request
+        $null = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $request
     }
     end {}
 }
@@ -211,10 +193,6 @@ Verifies user email address using reset code sent by email
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Login
 
 User login
@@ -225,7 +203,7 @@ Reset code
 
 .EXAMPLE
 
-PS> Submit-PipEmailVerification -Name "test" -Login test@somewhere.com -Code 1245
+Submit-PipEmailVerification -Login test@somewhere.com -Code 1245
 
 #>
     [CmdletBinding()]
@@ -233,8 +211,6 @@ PS> Submit-PipEmailVerification -Name "test" -Login test@somewhere.com -Code 124
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -254,7 +230,7 @@ PS> Submit-PipEmailVerification -Name "test" -Login test@somewhere.com -Code 124
             code = $Code;
         }
 
-        $null = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $request
+        $null = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $request
     }
     end {}
 }

@@ -21,10 +21,6 @@ Gets a page of user activities that satisfy specified criteria
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Get')
@@ -51,8 +47,7 @@ A include total count (default: false)
 
 .EXAMPLE
 
-# Get signin user activities from test cluster
-PS> Get-PipActivities -Name "test" -Filter @{ type="signin" }
+Get-PipActivities -Filter @{ type="signin" }
 
 #>
     [CmdletBinding()]
@@ -60,8 +55,6 @@ PS> Get-PipActivities -Name "test" -Filter @{ type="signin" }
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -85,7 +78,7 @@ PS> Get-PipActivities -Name "test" -Filter @{ type="signin" }
             total = $Total
         }
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Params $params
 
         Write-Output $result.Data
     }
@@ -107,10 +100,6 @@ Writes a single user activity
 .PARAMETER Connection
 
 A connection object
-
-.PARAMETER Name
-
-A name to refer to the client facade
 
 .PARAMETER Method
 
@@ -146,7 +135,7 @@ An event to be written:
 
 .EXAMPLE
 
-PS> Write-PipActivity -Name "test" -Activity @{ type="signin"; time=@(Get-Date); party=@{ id="1"; name="Test user" } }
+Write-PipActivity -Activity @{ type="signin"; time=@(Get-Date); party=@{ id="1"; name="Test user" } }
 
 #>
     [CmdletBinding()]
@@ -154,8 +143,6 @@ PS> Write-PipActivity -Name "test" -Activity @{ type="signin"; time=@(Get-Date);
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, Position = 0, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -168,7 +155,7 @@ PS> Write-PipActivity -Name "test" -Activity @{ type="signin"; time=@(Get-Date);
     {
         $route = $Uri
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $Activity
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $Activity
 
         Write-Output $result
     }

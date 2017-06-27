@@ -21,10 +21,6 @@ Gets a page with accounts that satisfy specified criteria
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Get')
@@ -51,8 +47,7 @@ A include total count (default: false)
 
 .EXAMPLE
 
-# Read top 10 user accounts from test cluster in text format
-PS> Get-PipAccounts -Name "test" -Take 10
+Get-PipAccounts -Take 10
 
 #>
     [CmdletBinding()]
@@ -60,8 +55,6 @@ PS> Get-PipAccounts -Name "test" -Take 10
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -87,7 +80,7 @@ PS> Get-PipAccounts -Name "test" -Take 10
             total = $Total
         }
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Params $params
 
         Write-Output $result.Data
     }
@@ -110,10 +103,6 @@ Gets user account by its unique id
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Get')
@@ -128,8 +117,7 @@ A user account id
 
 .EXAMPLE
 
-# Gets user account by id 123
-PS> Get-PipAccount -Name "test" -Id 123
+Get-PipAccount -Id 123
 
 #>
     [CmdletBinding()]
@@ -137,8 +125,6 @@ PS> Get-PipAccount -Name "test" -Id 123
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -151,7 +137,7 @@ PS> Get-PipAccount -Name "test" -Id 123
     {
         $route = $Uri -f $Id
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route
         
         Write-Output $result
     }
@@ -175,10 +161,6 @@ Check the assigned password in the result object.
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Post')
@@ -201,8 +183,7 @@ An account with the following structure
 
 .EXAMPLE
 
-# Creates a new user account and 
-PS> New-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; email="test@somewhere.com" }
+New-PipAccount -Account @{ name="Test User"; login="test"; email="test@somewhere.com" }
 
 #>
     [CmdletBinding()]
@@ -210,8 +191,6 @@ PS> New-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; emai
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -224,7 +203,7 @@ PS> New-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; emai
     {
         $route = $Uri
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $Account
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $Account
 
         Write-Output $result
     }
@@ -246,10 +225,6 @@ Updates a user account
 .PARAMETER Connection
 
 A connection object
-
-.PARAMETER Name
-
-A name to refer to the client facade
 
 .PARAMETER Method
 
@@ -273,8 +248,7 @@ An account with the following structure
 
 .EXAMPLE
 
-# Update existing user account
-PS> Update-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; email="test@somewhere.com"; }
+Update-PipAccount -Account @{ name="Test User"; login="test"; email="test@somewhere.com"; }
 
 #>
     [CmdletBinding()]
@@ -282,8 +256,6 @@ PS> Update-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; e
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Put",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -296,7 +268,7 @@ PS> Update-PipAccount -Name "test" -Account @{ name="Test User"; login="test"; e
     {
         $route = $Uri -f $Account.id
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $Account
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $Account
         
         Write-Output $result
     }
@@ -319,10 +291,6 @@ Removes user account by its unique id
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Delete')
@@ -337,8 +305,7 @@ A user account id
 
 .EXAMPLE
 
-# Delete user account with id 123
-PS> Remove-PipAccount -Name "test" -Id 123
+Remove-PipAccount -Id 123
 
 #>
     [CmdletBinding()]
@@ -346,8 +313,6 @@ PS> Remove-PipAccount -Name "test" -Id 123
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Delete",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -360,7 +325,7 @@ PS> Remove-PipAccount -Name "test" -Id 123
     {
         $route = $Uri -f $Id
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route
         
         Write-Output $result
     }

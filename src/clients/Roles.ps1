@@ -21,10 +21,6 @@ Gets all assigned roles to a user by its id
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Get')
@@ -39,7 +35,7 @@ A unique user id
 
 .EXAMPLE
 
-PS> Get-PipRoles -Name "test" -Id 123
+Get-PipRoles -Id 123
 
 #>
     [CmdletBinding()]
@@ -47,8 +43,6 @@ PS> Get-PipRoles -Name "test" -Id 123
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -84,10 +78,6 @@ Grants roles to a user
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Post')
@@ -102,7 +92,7 @@ A unique user id
 
 .EXAMPLE
 
-PS> Grant-PipRoles -Name "test" -Id 123 -Roles admin
+Grant-PipRoles -Id 123 -Roles admin
 
 #>
     [CmdletBinding()]
@@ -110,8 +100,6 @@ PS> Grant-PipRoles -Name "test" -Id 123 -Roles admin
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -149,10 +137,6 @@ Revokes roles from a user
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Post')
@@ -167,7 +151,7 @@ A unique user id
 
 .EXAMPLE
 
-PS> Revoke-PipRoles -Name "test" -Id 123 -Roles admin
+Revoke-PipRoles -Id 123 -Roles admin
 
 #>
     [CmdletBinding()]
@@ -175,8 +159,6 @@ PS> Revoke-PipRoles -Name "test" -Id 123 -Roles admin
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]

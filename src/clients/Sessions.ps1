@@ -22,10 +22,6 @@ Performs signup and opens a new session
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Post')
@@ -48,8 +44,7 @@ An user info with the following structure
 
 .EXAMPLE
 
-# Registers a new user in the system
-PS> Register-PipUser -Name "test" -User @{ name="Test User"; login="test"; email="test@somewhere.com"; password="test123" }
+Register-PipUser -User @{ name="Test User"; login="test"; email="test@somewhere.com"; password="test123" }
 
 #>
     [CmdletBinding()]
@@ -57,8 +52,6 @@ PS> Register-PipUser -Name "test" -User @{ name="Test User"; login="test"; email
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -71,9 +64,9 @@ PS> Register-PipUser -Name "test" -User @{ name="Test User"; login="test"; email
     {
         $route = $Uri
 
-        $session = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $User
+        $session = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $User
 
-        $Connection = if ($Connection -eq $null) { Get-IqtConnection -Name $Name } else { $Connection }
+        $Connection = if ($Connection -eq $null) { Get-IqtConnection } else { $Connection }
         if ($Connection -ne $null) {
             $Connection.Headers["x-session-id"] = $session.id
             $Connection.Session = $session
@@ -100,10 +93,6 @@ Open-PipSession opens connection and starts a new user session with client facad
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Get')
@@ -126,7 +115,7 @@ User password
 
 .EXAMPLE
 
-PS> $test = Open-PipSession -Name "test" -Login "test1@somewhere.com" -Password "mypassword"
+$test = Open-PipSession -Login "test1@somewhere.com" -Password "mypassword"
 
 #>
     [CmdletBinding()]
@@ -134,8 +123,6 @@ PS> $test = Open-PipSession -Name "test" -Login "test1@somewhere.com" -Password 
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -158,7 +145,7 @@ PS> $test = Open-PipSession -Name "test" -Login "test1@somewhere.com" -Password 
 
         $session = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Params $params
 
-        $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
+        $Connection = if ($Connection -eq $null) { Get-PipConnection } else {$Connection}
         if ($Connection -ne $null) {
             $Connection.Headers[$SessionHeader] = $session.id
             $Connection.Session = $session
@@ -185,10 +172,6 @@ Open-PipSession closes previously opened user session with client facade
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Get')
@@ -199,7 +182,7 @@ An operation uri (default: /api/1.0/signout)
 
 .EXAMPLE
 
-PS> Close-PipConnection -Name "test"
+Close-PipConnection
 
 #>
     [CmdletBinding()]
@@ -207,8 +190,6 @@ PS> Close-PipConnection -Name "test"
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -223,7 +204,7 @@ PS> Close-PipConnection -Name "test"
 
         $session = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route
 
-        $Connection = if ($Connection -eq $null) { Get-PipConnection -Name $Name } else {$Connection}
+        $Connection = if ($Connection -eq $null) { Get-PipConnection } else {$Connection}
         if ($Connection -ne $null) {
             $Connection.Headers[$SessionHeader] = $null
             $Connection.Session = $null
@@ -249,10 +230,6 @@ Gets a page with sessions that satisfy specified criteria
 .PARAMETER Connection
 
 A connection object
-
-.PARAMETER Name
-
-A name to refer to the client facade
 
 .PARAMETER Method
 
@@ -280,8 +257,7 @@ A include total count (default: false)
 
 .EXAMPLE
 
-# Read top 10 user sessions from test cluster in text format
-PS> Get-PipSessions -Name "test" -Take 10
+Get-PipSessions -Take 10
 
 #>
     [CmdletBinding()]
@@ -289,8 +265,6 @@ PS> Get-PipSessions -Name "test" -Take 10
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -316,7 +290,7 @@ PS> Get-PipSessions -Name "test" -Take 10
             total = $Total
         }
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Params $params
 
         Write-Output $result.Data
     }
@@ -339,10 +313,6 @@ Gets the current session
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Method
 
 An operation method (default: 'Get')
@@ -353,7 +323,7 @@ An operation uri (default: /api/1.0/sessions/current)
 
 .EXAMPLE
 
-PS> Get-PipCurrentSession -Name "test"
+Get-PipCurrentSession
 
 #>
     [CmdletBinding()]
@@ -361,8 +331,6 @@ PS> Get-PipCurrentSession -Name "test"
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Get",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -373,7 +341,7 @@ PS> Get-PipCurrentSession -Name "test"
     {
         $route = $Uri
 
-        $result = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
+        $result = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Params $params
 
         Write-Output $result
     }

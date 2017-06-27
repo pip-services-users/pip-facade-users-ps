@@ -21,10 +21,6 @@ Gets all assigned roles to a user by its id
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER OldPassword
 
 An old password
@@ -35,7 +31,7 @@ A new password
 
 .EXAMPLE
 
-PS> Set-PipPassword -Name "test" -Id 123
+Set-PipPassword -Id 123
 
 #>
     [CmdletBinding()]
@@ -43,8 +39,6 @@ PS> Set-PipPassword -Name "test" -Id 123
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -58,7 +52,7 @@ PS> Set-PipPassword -Name "test" -Id 123
     process 
     {
         if ($Connection -eq $null) {
-            $Connection = Get-PipConnection -Name $Name
+            $Connection = Get-PipConnection
         }
         if ($Connection -eq $null) {
             throw "Server is not connected"
@@ -79,7 +73,7 @@ PS> Set-PipPassword -Name "test" -Id 123
             new_password = $NewPassword;
         }
 
-        $null = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Params $params
+        $null = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Params $params
     }
     end {}
 }
@@ -100,17 +94,13 @@ Requests a password recovery email. The email is set to the account primary emai
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Login
 
 User login
 
 .EXAMPLE
 
-PS> Request-PipPassword -Name "test" -Login test@somewhere.com
+Request-PipPassword -Login test@somewhere.com
 
 #>
     [CmdletBinding()]
@@ -118,8 +108,6 @@ PS> Request-PipPassword -Name "test" -Login test@somewhere.com
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -136,7 +124,7 @@ PS> Request-PipPassword -Name "test" -Login test@somewhere.com
             login = $Login;
         }
 
-        $null = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $request
+        $null = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $request
     }
     end {}
 }
@@ -157,10 +145,6 @@ Resets user password using reset code sent by email
 
 A connection object
 
-.PARAMETER Name
-
-A name to refer to the client facade
-
 .PARAMETER Login
 
 User login
@@ -175,7 +159,7 @@ A new password
 
 .EXAMPLE
 
-PS> Reset-PipPassword -Name "test" -Login test@somewhere.com -Code 1245 -Password pass123
+Reset-PipPassword -Login test@somewhere.com -Code 1245 -Password pass123
 
 #>
     [CmdletBinding()]
@@ -183,8 +167,6 @@ PS> Reset-PipPassword -Name "test" -Login test@somewhere.com -Code 1245 -Passwor
     (
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [Hashtable] $Connection,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string] $Name,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string] $Method = "Post",
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -207,7 +189,7 @@ PS> Reset-PipPassword -Name "test" -Login test@somewhere.com -Code 1245 -Passwor
             password = $Password;
         }
 
-        $null = Invoke-PipFacade -Connection $Connection -Name $Name -Method $Method -Route $route -Request $request
+        $null = Invoke-PipFacade -Connection $Connection -Method $Method -Route $route -Request $request
     }
     end {}
 }

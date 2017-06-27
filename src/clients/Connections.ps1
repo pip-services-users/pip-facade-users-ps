@@ -44,7 +44,7 @@ User password
 
 .EXAMPLE
 
-PS> $test = Connect-PipFacade -Name "test" -Host "172.16.141.175" -Post 28800 -Login "test1@somewhere.com" -Password "password123"
+$test = Connect-PipFacade -Host "172.16.141.175" -Post 28800 -Login "test1@somewhere.com" -Password "password123"
 
 #>
     [CmdletBinding()]
@@ -66,7 +66,7 @@ PS> $test = Connect-PipFacade -Name "test" -Host "172.16.141.175" -Post 28800 -L
     begin {}
     process 
     {
-        $connection = Open-PipConnection -Name $Name -Protocol $Protocol -Host $Host -Port $Port -ErrorAction Stop
+        $connection = Open-PipConnection -Protocol $Protocol -Host $Host -Port $Port -ErrorAction Stop
         $null = Open-PipSession -Connection $connection -Login $Login -Password $Password
         Write-Output $connection
     }
@@ -95,7 +95,7 @@ A name to refer to the client facade
 
 .EXAMPLE
 
-PS> Disconnect-PipFacade -Name "test"
+Disconnect-PipFacade
 
 #>
     [CmdletBinding()]
@@ -109,8 +109,8 @@ PS> Disconnect-PipFacade -Name "test"
     begin {}
     process 
     {
-        $null = Close-PipSession -Connection $Connection -Name $Name
-        $null = Close-PipConnection -Connection $Connection -Name $Name
+        $null = Close-PipSession -Connection $Connection
+        $null = Close-PipConnection -Connection $Connection
     }
     end {}
 }
