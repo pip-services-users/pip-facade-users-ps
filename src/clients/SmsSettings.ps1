@@ -178,16 +178,16 @@ Request-PipSmsVerification -Login test@somewhere.com
 }
 
 
-function Submit-PipSmsVerification
+function Submit-PipPhoneVerification
 {
 <#
 .SYNOPSIS
 
-Verifies user sms address
+Verifies user phone number
 
 .DESCRIPTION
 
-Verifies user sms address using reset code sent by sms
+Verifies user phone number using reset code sent via sms
 
 .PARAMETER Connection
 
@@ -203,7 +203,7 @@ Reset code
 
 .EXAMPLE
 
-Submit-PipSmsVerification -Login test@somewhere.com -Code 1245
+Submit-PipPhoneVerification -Login test@somewhere.com -Code 1245
 
 #>
     [CmdletBinding()]
