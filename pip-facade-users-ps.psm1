@@ -17,3 +17,5 @@ if ($path -eq "") { $path = "." }
 . "$($path)/src/clients/Activities.ps1"
 . "$($path)/src/clients/EmailSettings.ps1"
 . "$($path)/src/clients/Email.ps1"
+. "$($path)/src/clients/SmsSettings.ps1"
+. "$($path)/src/clients/Sms.ps1"
